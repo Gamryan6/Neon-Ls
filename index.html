@@ -4,223 +4,455 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pack Neon LS — LSPDFR Officiel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --blue: #0af;
-            --blue-glow: rgba(0, 170, 255, 0.4);
+            --cyan: #00e5ff;
+            --cyan-dim: rgba(0, 229, 255, 0.12);
+            --cyan-mid: rgba(0, 229, 255, 0.35);
+            --red: #ff1744;
             --discord: #5865F2;
-            --white: #f0f4ff;
-            --dark: #04080f;
-            --panel: rgba(4, 14, 28, 0.92);
-            --border: rgba(0, 170, 255, 0.25);
+            --white: #eef4ff;
+            --dark: #030609;
+            --panel: rgba(4, 10, 22, 0.82);
+            --border: rgba(0, 229, 255, 0.18);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--dark);
+            font-family: 'Barlow', sans-serif;
+            background: var(--dark);
             color: var(--white);
             min-height: 100vh;
             overflow-x: hidden;
         }
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
-            pointer-events: none;
-            z-index: 999;
-        }
-        .bg-scene {
+
+        /* ── BACKGROUND IMAGE ────────────────────────── */
+        .bg-image {
             position: fixed; inset: 0; z-index: 0;
-            background: radial-gradient(ellipse 60% 40% at 15% 50%, rgba(0,100,200,0.18) 0%, transparent 70%),
-                        radial-gradient(ellipse 50% 35% at 85% 55%, rgba(0,50,120,0.14) 0%, transparent 70%),
-                        linear-gradient(180deg, #04080f 0%, #060d1e 60%, #030810 100%);
+            background: url('bg.png') center center / cover no-repeat;
+            filter: blur(6px) brightness(0.35) saturate(0.8);
+            transform: scale(1.06);
         }
-        .police-light {
-            position: fixed; width: 300px; height: 300px;
-            border-radius: 50%; filter: blur(80px); opacity: 0;
-            pointer-events: none; z-index: 1;
-        }
-        .police-light.blue { background: rgba(0,120,255,0.5); top:10%; left:-5%; animation: flashBlue 2.5s ease-in-out infinite; }
-        .police-light.red { background: rgba(255,20,50,0.45); top:10%; right:-5%; animation: flashRed 2.5s ease-in-out infinite; }
-        @keyframes flashBlue { 0%,100%{opacity:0} 20%,30%{opacity:1} 50%{opacity:0} 70%,80%{opacity:0.6} }
-        @keyframes flashRed { 0%,100%{opacity:0} 20%,30%{opacity:0.5} 50%,65%{opacity:0} 75%,85%{opacity:1} }
 
+        /* Dark overlay gradient on top of blurred image */
+        .bg-overlay {
+            position: fixed; inset: 0; z-index: 1;
+            background:
+                linear-gradient(180deg,
+                    rgba(3,6,9,0.55) 0%,
+                    rgba(3,6,9,0.3) 30%,
+                    rgba(3,6,9,0.3) 65%,
+                    rgba(3,6,9,0.85) 100%
+                ),
+                radial-gradient(ellipse 80% 50% at 50% 100%, rgba(0,20,60,0.6) 0%, transparent 70%);
+        }
+
+        /* Grid overlay */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 2; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Scanlines */
+        .scanlines {
+            position: fixed; inset: 0; z-index: 3; pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);
+        }
+
+        /* Cop light flashes */
+        .light { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 2; }
+        .light-b { width: 420px; height: 420px; background: rgba(0,80,255,0.3); top: -100px; left: -100px; animation: flashB 2.4s ease-in-out infinite; }
+        .light-r { width: 360px; height: 360px; background: rgba(255,20,50,0.28); top: -80px; right: -80px; animation: flashR 2.4s ease-in-out infinite; }
+        @keyframes flashB { 0%,100%{opacity:0} 15%,25%{opacity:1} 45%{opacity:0} 65%,75%{opacity:0.5} }
+        @keyframes flashR { 0%,100%{opacity:0} 15%,25%{opacity:0.4} 45%,60%{opacity:0} 70%,82%{opacity:1} }
+
+        /* ── HEADER ──────────────────────────────────── */
         header {
-            position: relative; z-index: 10;
-            padding: 0 40px; display: flex; align-items: center;
-            justify-content: space-between; height: 70px;
+            position: relative; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 48px; height: 64px;
+            background: rgba(2,5,10,0.75);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            background: rgba(4,8,15,0.9); backdrop-filter: blur(12px);
         }
-        .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 4px; color: var(--blue); text-shadow: 0 0 20px var(--blue-glow); }
-        .header-badge { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
+        .logo { display: flex; align-items: center; gap: 14px; }
+        .logo-badge {
+            width: 36px; height: 36px;
+            background: var(--cyan-dim);
+            border: 1px solid var(--cyan-mid);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-badge svg { width: 18px; height: 18px; fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .logo-text {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 1.4rem; letter-spacing: 3px;
+            color: var(--cyan);
+            text-shadow: 0 0 24px rgba(0,229,255,0.5);
+        }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .version-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem; letter-spacing: 3px;
+            color: rgba(255,255,255,0.28);
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        .btn-discord-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 18px;
+            background: rgba(88,101,242,0.12);
+            border: 1px solid rgba(88,101,242,0.45);
+            border-radius: 5px;
+            color: #8891f5; text-decoration: none;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85rem; font-weight: 600; letter-spacing: 2px;
+            transition: all 0.25s;
+        }
+        .btn-discord-header:hover { background: rgba(88,101,242,0.28); color: #fff; }
 
-        .hero { position: relative; z-index: 10; text-align: center; padding: 80px 20px 50px; }
-        .hero-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--blue); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
-        .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem,10vw,8rem); line-height: 0.9; letter-spacing: 6px; color: var(--white); text-shadow: 0 0 60px rgba(0,170,255,0.3); opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards; }
-        .hero-title span { color: var(--blue); text-shadow: 0 0 40px var(--blue-glow), 0 0 80px rgba(0,170,255,0.2); }
-        .hero-sub { margin-top: 20px; font-size: 1.1rem; font-weight: 500; color: rgba(200,220,255,0.55); letter-spacing: 2px; text-transform: uppercase; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; }
-
-        .alert-strip {
+        /* ── HERO ────────────────────────────────────── */
+        .hero {
             position: relative; z-index: 10;
-            max-width: 860px; margin: 0 auto 40px;
-            padding: 14px 24px;
-            background: rgba(255,20,50,0.1);
-            border: 1px solid rgba(255,20,50,0.3);
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem; letter-spacing: 5px;
+            color: var(--cyan);
+            opacity: 0; animation: riseIn 0.7s ease 0.1s forwards;
+            margin-bottom: 24px;
+        }
+        .hero-eyebrow::before, .hero-eyebrow::after {
+            content: ''; display: block; width: 36px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan));
+        }
+        .hero-eyebrow::after { transform: scaleX(-1); }
+        .hero-title {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: clamp(4rem, 12vw, 9.5rem);
+            line-height: 0.88; letter-spacing: 4px;
+            color: var(--white);
+            text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+            opacity: 0; animation: riseIn 0.8s ease 0.3s forwards;
+        }
+        .hero-title .accent {
+            color: var(--cyan);
+            text-shadow: 0 0 50px rgba(0,229,255,0.55), 0 0 100px rgba(0,229,255,0.2), 0 2px 30px rgba(0,0,0,0.9);
+            display: block;
+        }
+        .hero-divider {
+            width: 60px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            margin: 28px auto 22px;
+            opacity: 0; animation: riseIn 0.7s ease 0.5s forwards;
+        }
+        .hero-sub {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem; font-weight: 600;
+            letter-spacing: 4px; text-transform: uppercase;
+            color: rgba(200,220,255,0.5);
+            opacity: 0; animation: riseIn 0.7s ease 0.6s forwards;
+        }
+
+        /* ── ALERT ───────────────────────────────────── */
+        .alert-wrap {
+            position: relative; z-index: 10;
+            max-width: 860px; margin: 0 auto 32px;
+            padding: 0 24px;
+            opacity: 0; animation: riseIn 0.7s ease 0.8s forwards;
+        }
+        .alert-strip {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 13px 20px;
+            background: rgba(255,23,68,0.07);
+            border: 1px solid rgba(255,23,68,0.22);
+            border-left: 3px solid var(--red);
             border-radius: 4px;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: rgba(255,100,120,0.85);
-            letter-spacing: 0.5px;
-            line-height: 1.6;
-            display: flex; gap: 12px; align-items: flex-start;
-            opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards;
+            font-size: 0.67rem; letter-spacing: 0.4px; line-height: 1.7;
+            color: rgba(255,110,130,0.8);
         }
+        .alert-icon { color: var(--red); margin-top: 1px; flex-shrink: 0; }
 
+        /* ── MAIN GRID ───────────────────────────────── */
         .main-wrap {
             position: relative; z-index: 10;
-            max-width: 860px; margin: 0 auto 60px;
-            padding: 0 20px;
-            display: grid; grid-template-columns: 1fr 280px; gap: 24px;
+            max-width: 860px; margin: 0 auto 80px;
+            padding: 0 24px;
+            display: grid; grid-template-columns: 1fr 280px; gap: 20px;
         }
 
+        /* ── LEFT PANEL ──────────────────────────────── */
         .panel {
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 6px; padding: 36px;
-            backdrop-filter: blur(20px);
-            position: relative; overflow: hidden;
-            opacity: 0; animation: fadeUp 0.8s ease 1s forwards;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+            backdrop-filter: blur(32px);
+            opacity: 0; animation: riseIn 0.8s ease 1.0s forwards;
         }
-        .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg,transparent,var(--blue),transparent); }
-        .panel-label { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--blue); letter-spacing:4px; text-transform:uppercase; margin-bottom:16px; opacity:0.7; }
-        .panel h2 { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:3px; color:var(--white); margin-bottom:16px; }
-        .panel p { color:rgba(180,200,240,0.7); font-size:1rem; font-weight:500; line-height:1.6; margin-bottom:14px; }
+        .panel-top-bar {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, var(--cyan) 40%, rgba(0,229,255,0.3) 100%);
+        }
+        .panel-body { padding: 36px 38px; }
+        .panel-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.63rem; letter-spacing: 4px;
+            color: var(--cyan); opacity: 0.65; margin-bottom: 10px;
+        }
+        .panel h2 {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 2rem; letter-spacing: 3px;
+            color: var(--white); margin-bottom: 18px;
+        }
+        .panel p {
+            color: rgba(180,200,240,0.65);
+            font-size: 1rem; line-height: 1.65; margin-bottom: 12px;
+        }
 
-        /* ── DISCORD LOGIN BUTTON ─────────────────────── */
+        /* ── DISCORD BUTTON ──────────────────────────── */
         .btn-discord-login {
             display: inline-flex; align-items: center; gap: 14px;
-            margin-top: 24px; padding: 18px 36px;
-            background: linear-gradient(135deg, var(--discord), #4752c4);
-            color: #fff !important; text-decoration: none;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem; letter-spacing: 4px;
-            border-radius: 4px;
-            box-shadow: 0 0 30px rgba(88,101,242,0.4), 0 4px 20px rgba(0,0,0,0.5);
-            transition: all 0.3s; cursor: pointer; border: none;
+            margin-top: 28px; padding: 17px 36px;
+            background: linear-gradient(135deg, #5865F2, #4044bf);
+            color: #fff; border: none; cursor: pointer;
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 1.25rem; letter-spacing: 3px;
+            border-radius: 5px;
+            box-shadow: 0 4px 32px rgba(88,101,242,0.5), 0 1px 0 rgba(255,255,255,0.1) inset;
+            transition: all 0.25s;
             position: relative; overflow: hidden;
         }
-        .btn-discord-login:hover { transform:translateY(-2px); box-shadow:0 0 50px rgba(88,101,242,0.6),0 8px 30px rgba(0,0,0,0.5); }
-
-        .discord-svg { width:24px; height:18px; flex-shrink:0; }
-
-        .hint { font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:rgba(180,200,240,0.35); letter-spacing:2px; margin-top:16px; }
-
-        .how-it-works {
-            margin-top: 30px; padding-top: 24px;
-            border-top: 1px solid var(--border);
+        .btn-discord-login::after {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+            transition: left 0.45s;
         }
-        .how-title { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:rgba(180,200,240,0.5); letter-spacing:3px; margin-bottom:14px; }
-        .steps { display:flex; flex-direction:column; gap:10px; }
-        .step { display:flex; align-items:center; gap:12px; }
-        .step-num { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--blue); min-width:24px; opacity:0.8; }
-        .step-text { font-size:0.88rem; color:rgba(180,200,240,0.6); font-weight:500; }
+        .btn-discord-login:hover::after { left: 160%; }
+        .btn-discord-login:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(88,101,242,0.65); }
+        .btn-discord-login:active { transform: translateY(0); }
+        .discord-svg { width: 22px; height: 17px; fill: currentColor; flex-shrink: 0; }
+        .hint {
+            margin-top: 14px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem; letter-spacing: 2px;
+            color: rgba(180,200,240,0.28);
+        }
+        .hint::before { content: '▸ '; color: var(--cyan); opacity: 0.6; }
 
-        /* ── SIDE ────────────────────────────────────── */
-        .side { display:flex; flex-direction:column; gap:20px; opacity:0; animation:fadeUp 0.8s ease 1.2s forwards; }
-        .side-card { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:24px; backdrop-filter:blur(20px); position:relative; overflow:hidden; }
-        .side-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg,transparent,rgba(88,101,242,0.9),transparent); }
-        .side-card h3 { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:3px; color:#7289da; margin-bottom:12px; }
-        .side-card p { font-size:0.9rem; color:rgba(180,200,240,0.6); line-height:1.6; margin-bottom:16px; }
-        .btn-discord-small { display:block; padding:14px; background:rgba(88,101,242,0.15); border:1px solid rgba(88,101,242,0.4); color:#fff!important; text-decoration:none; text-align:center; font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px; border-radius:4px; transition:all 0.3s; }
-        .btn-discord-small:hover { background:rgba(88,101,242,0.35); box-shadow:0 0 20px rgba(88,101,242,0.4); }
-        .feature-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
-        .feature-list li { font-size:0.88rem; color:rgba(180,200,240,0.65); display:flex; align-items:center; gap:8px; font-weight:500; }
-        .feature-list li::before { content:'▸'; color:var(--blue); font-size:0.7rem; }
+        /* ── HOW IT WORKS ────────────────────────────── */
+        .how-it-works {
+            margin-top: 36px; padding-top: 28px;
+            border-top: 1px solid rgba(0,229,255,0.1);
+        }
+        .how-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.63rem; letter-spacing: 4px;
+            color: rgba(180,200,240,0.4); margin-bottom: 18px;
+        }
+        .steps { display: flex; flex-direction: column; }
+        .step {
+            display: flex; align-items: center; gap: 16px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .step:last-child { border-bottom: none; }
+        .step-num {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; color: var(--cyan); min-width: 26px; opacity: 0.7;
+        }
+        .step-text { font-size: 0.9rem; font-weight: 500; color: rgba(180,200,240,0.65); }
+        .step-text.denied { color: rgba(255,80,100,0.65); }
 
-        footer { position:relative; z-index:10; text-align:center; padding:30px; border-top:1px solid var(--border); background:rgba(4,8,15,0.7); }
-        footer p { font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:rgba(180,200,240,0.3); letter-spacing:2px; }
-        footer a { color:#7289da; text-decoration:none; }
+        /* ── SIDEBAR ─────────────────────────────────── */
+        .side {
+            display: flex; flex-direction: column; gap: 16px;
+            opacity: 0; animation: riseIn 0.8s ease 1.15s forwards;
+        }
+        .side-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+            backdrop-filter: blur(32px);
+        }
+        .side-card-bar { height: 2px; }
+        .side-card-bar.discord { background: linear-gradient(90deg, rgba(88,101,242,0.15), rgba(88,101,242,0.9), rgba(88,101,242,0.15)); }
+        .side-card-bar.cyan { background: linear-gradient(90deg, rgba(0,229,255,0.1), var(--cyan), rgba(0,229,255,0.1)); }
+        .side-card-body { padding: 22px 24px; }
+        .side-card h3 {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 10px;
+        }
+        .side-card h3.discord-color { color: #8891f5; }
+        .side-card h3.cyan-color { color: var(--cyan); }
+        .side-card p { font-size: 0.88rem; color: rgba(180,200,240,0.55); line-height: 1.6; margin-bottom: 16px; }
 
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @media(max-width:700px){ .main-wrap{grid-template-columns:1fr} header{padding:0 20px} .header-badge{display:none} }
+        .btn-discord-small {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 13px;
+            background: rgba(88,101,242,0.1);
+            border: 1px solid rgba(88,101,242,0.38);
+            color: #8891f5; text-decoration: none;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.95rem; font-weight: 700; letter-spacing: 3px;
+            border-radius: 5px; transition: all 0.25s;
+        }
+        .btn-discord-small:hover { background: rgba(88,101,242,0.28); color: #fff; }
+
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .feature-list li {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.88rem; font-weight: 500;
+            color: rgba(180,200,240,0.6);
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .feature-list li::before {
+            content: ''; width: 5px; height: 5px; border-radius: 50%;
+            background: var(--cyan); flex-shrink: 0; opacity: 0.7;
+        }
+
+        /* ── FOOTER ──────────────────────────────────── */
+        footer {
+            position: relative; z-index: 10;
+            border-top: 1px solid rgba(0,229,255,0.1);
+            background: rgba(2,5,10,0.7);
+            padding: 26px; text-align: center;
+        }
+        footer p {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.67rem; letter-spacing: 2px;
+            color: rgba(180,200,240,0.25);
+        }
+        footer a { color: rgba(136,145,245,0.7); text-decoration: none; }
+
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 700px) {
+            .main-wrap { grid-template-columns: 1fr; }
+            header { padding: 0 20px; }
+            .version-tag { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="bg-scene"></div>
-    <div class="police-light blue"></div>
-    <div class="police-light red"></div>
+    <!-- Background layers -->
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+    <div class="bg-grid"></div>
+    <div class="scanlines"></div>
+    <div class="light light-b"></div>
+    <div class="light light-r"></div>
 
     <header>
-        <div class="logo-text">NEON LS</div>
-        <div class="header-badge">LSPDFR // PACK OFFICIEL // V1</div>
-        <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:rgba(88,101,242,0.15);border:1px solid rgba(88,101,242,0.4);padding:8px 18px;border-radius:4px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;color:#7289da;letter-spacing:1px;transition:all 0.3s;">DISCORD</a>
+        <div class="logo">
+            <div class="logo-badge">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <span class="logo-text">NEON LS</span>
+        </div>
+        <div class="header-right">
+            <span class="version-tag">LSPDFR // V2</span>
+            <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank" class="btn-discord-header">
+                <svg width="16" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.5.8a.2.2 0 0 0-.2.1 40.7 40.7 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.6 37.6 0 0 0 25.4.9a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.5 4.9.2.2 0 0 0 10.4 5C.7 19.5-1.9 33.6.6 47.6a.2.2 0 0 0 .1.1 58.8 58.8 0 0 0 17.7 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4 27.8 27.8 0 0 0 1.1-.9.2.2 0 0 1 .2 0c11.6 5.3 24.1 5.3 35.5 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .4 36.1 36.1 0 0 1-5.5 2.6.2.2 0 0 0-.1.3c1 2 2.3 3.9 3.6 5.9a.2.2 0 0 0 .2.1 58.6 58.6 0 0 0 17.7-9 .2.2 0 0 0 .1-.1C72.8 31.8 69.3 17.7 60.2 5a.2.2 0 0 0-.1-.1z"/></svg>
+                DISCORD
+            </a>
+        </div>
     </header>
 
     <section class="hero">
-        <p class="hero-tag">// PACK OFFICIEL BY GAMRYAN //</p>
-        <h1 class="hero-title">PACK <span>NEON LS</span></h1>
+        <div class="hero-eyebrow">PACK OFFICIEL BY GAMRYAN</div>
+        <h1 class="hero-title">
+            PACK
+            <span class="accent">NEON LS</span>
+        </h1>
+        <div class="hero-divider"></div>
         <p class="hero-sub">Textures · Véhicules · Scripts · Mods — LSPDFR Ultimate</p>
     </section>
 
-    <div style="position:relative;z-index:10;max-width:860px;margin:0 auto;padding:0 20px;">
+    <div class="alert-wrap">
         <div class="alert-strip">
-            <span>⚠</span>
+            <span class="alert-icon">⚠</span>
             <span>AVERTISSEMENT LÉGAL — Toute reproduction, modification, diffusion ou réutilisation sans autorisation expresse est strictement interdite et passible de poursuites (art. L335-2 et L335-3 du Code de la propriété intellectuelle).</span>
         </div>
     </div>
 
     <div class="main-wrap">
         <div class="panel">
-            <p class="panel-label">// ACCÈS MEMBRES DISCORD //</p>
-            <h2>ZONE SÉCURISÉE</h2>
-            <p>L'accès au pack est réservé aux membres de notre serveur Discord. Connecte ton compte Discord pour vérification automatique.</p>
-            <p>Aucun mot de passe à retenir — si t'es dans le serveur, l'accès est immédiat.</p>
+            <div class="panel-top-bar"></div>
+            <div class="panel-body">
+                <p class="panel-label">// ACCÈS MEMBRES DISCORD //</p>
+                <h2>ZONE SÉCURISÉE</h2>
+                <p>L'accès au pack est réservé aux membres de notre serveur Discord. Connecte ton compte Discord pour vérification automatique.</p>
+                <p>Aucun mot de passe à retenir — si t'es dans le serveur, l'accès est immédiat.</p>
 
-            <button class="btn-discord-login" onclick="loginDiscord()">
-                <svg class="discord-svg" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.5.8a.2.2 0 0 0-.2.1 40.7 40.7 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.6 37.6 0 0 0 25.4.9a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.5 4.9.2.2 0 0 0 10.4 5C.7 19.5-1.9 33.6.6 47.6a.2.2 0 0 0 .1.1 58.8 58.8 0 0 0 17.7 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4 27.8 27.8 0 0 0 1.1-.9.2.2 0 0 1 .2 0c11.6 5.3 24.1 5.3 35.5 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .4 36.1 36.1 0 0 1-5.5 2.6.2.2 0 0 0-.1.3c1 2 2.3 3.9 3.6 5.9a.2.2 0 0 0 .2.1 58.6 58.6 0 0 0 17.7-9 .2.2 0 0 0 .1-.1C72.8 31.8 69.3 17.7 60.2 5a.2.2 0 0 0-.1-.1z"/></svg>
-                SE CONNECTER AVEC DISCORD
-            </button>
-            <p class="hint">▸ CONNEXION SÉCURISÉE VIA DISCORD OAUTH2 — AUCUN MOT DE PASSE STOCKÉ</p>
+                <button class="btn-discord-login" onclick="loginDiscord()">
+                    <svg class="discord-svg" viewBox="0 0 71 55"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.5.8a.2.2 0 0 0-.2.1 40.7 40.7 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.6 37.6 0 0 0 25.4.9a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.5 4.9.2.2 0 0 0 10.4 5C.7 19.5-1.9 33.6.6 47.6a.2.2 0 0 0 .1.1 58.8 58.8 0 0 0 17.7 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4 27.8 27.8 0 0 0 1.1-.9.2.2 0 0 1 .2 0c11.6 5.3 24.1 5.3 35.5 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .4 36.1 36.1 0 0 1-5.5 2.6.2.2 0 0 0-.1.3c1 2 2.3 3.9 3.6 5.9a.2.2 0 0 0 .2.1 58.6 58.6 0 0 0 17.7-9 .2.2 0 0 0 .1-.1C72.8 31.8 69.3 17.7 60.2 5a.2.2 0 0 0-.1-.1z"/></svg>
+                    SE CONNECTER AVEC DISCORD
+                </button>
+                <p class="hint">CONNEXION SÉCURISÉE VIA DISCORD OAUTH2 — AUCUN MOT DE PASSE STOCKÉ</p>
 
-            <div class="how-it-works">
-                <p class="how-title">// COMMENT ÇA MARCHE //</p>
-                <div class="steps">
-                    <div class="step"><span class="step-num">01</span><span class="step-text">Tu cliques sur le bouton Discord ci-dessus</span></div>
-                    <div class="step"><span class="step-num">02</span><span class="step-text">Discord vérifie que tu fais partie du serveur</span></div>
-                    <div class="step"><span class="step-num">03</span><span class="step-text">Accès immédiat au téléchargement si tu es membre</span></div>
-                    <div class="step"><span class="step-num">✗</span><span class="step-text" style="color:rgba(255,80,100,0.7)">Refus automatique si tu n'es pas dans le serveur</span></div>
+                <div class="how-it-works">
+                    <p class="how-title">// COMMENT ÇA MARCHE //</p>
+                    <div class="steps">
+                        <div class="step"><span class="step-num">01</span><span class="step-text">Tu cliques sur le bouton Discord ci-dessus</span></div>
+                        <div class="step"><span class="step-num">02</span><span class="step-text">Discord vérifie que tu fais partie du serveur</span></div>
+                        <div class="step"><span class="step-num">03</span><span class="step-text">Accès immédiat au téléchargement si tu es membre</span></div>
+                        <div class="step"><span class="step-num">✕</span><span class="step-text denied">Refus automatique si tu n'es pas dans le serveur</span></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="side">
             <div class="side-card">
-                <h3>COMMUNAUTÉ</h3>
-                <p>Pas encore membre ? Rejoins le Discord d'abord pour avoir accès au pack.</p>
-                <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank" class="btn-discord-small">REJOINDRE LE DISCORD</a>
+                <div class="side-card-bar discord"></div>
+                <div class="side-card-body">
+                    <h3 class="discord-color">COMMUNAUTÉ</h3>
+                    <p>Pas encore membre ? Rejoins le Discord d'abord pour avoir accès au pack.</p>
+                    <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank" class="btn-discord-small">
+                        <svg width="15" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.5.8a.2.2 0 0 0-.2.1 40.7 40.7 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.6 37.6 0 0 0 25.4.9a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.5 4.9.2.2 0 0 0 10.4 5C.7 19.5-1.9 33.6.6 47.6a.2.2 0 0 0 .1.1 58.8 58.8 0 0 0 17.7 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4 27.8 27.8 0 0 0 1.1-.9.2.2 0 0 1 .2 0c11.6 5.3 24.1 5.3 35.5 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .4 36.1 36.1 0 0 1-5.5 2.6.2.2 0 0 0-.1.3c1 2 2.3 3.9 3.6 5.9a.2.2 0 0 0 .2.1 58.6 58.6 0 0 0 17.7-9 .2.2 0 0 0 .1-.1C72.8 31.8 69.3 17.7 60.2 5a.2.2 0 0 0-.1-.1z"/></svg>
+                        REJOINDRE
+                    </a>
+                </div>
             </div>
-            <div class="side-card" style="border-color:rgba(0,170,255,0.25)">
-                <h3 style="color:var(--blue)">CONTENU DU PACK</h3>
-                <ul class="feature-list">
-                    <li>Textures haute définition</li>
-                    <li>Véhicules de police customisés</li>
-                    <li>Scripts LSPDFR optimisés</li>
-                    <li>Mods sélectionnés</li>
-                    <li>Guide d'installation inclus</li>
-                    <li>Support via Discord</li>
-                </ul>
+
+            <div class="side-card">
+                <div class="side-card-bar cyan"></div>
+                <div class="side-card-body">
+                    <h3 class="cyan-color">CONTENU DU PACK</h3>
+                    <ul class="feature-list">
+                        <li>Textures haute définition</li>
+                        <li>Véhicules de police customisés</li>
+                        <li>Scripts LSPDFR optimisés</li>
+                        <li>Mods sélectionnés</li>
+                        <li>Guide d'installation inclus</li>
+                        <li>Support via Discord</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>CRÉÉ PAR GAMRYAN &nbsp;·&nbsp; TOUS DROITS RÉSERVÉS 2025 &nbsp;·&nbsp; <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank">DISCORD</a></p>
+        <p>CRÉÉ PAR GAMRYAN &nbsp;·&nbsp; TOUS DROITS RÉSERVÉS 2026 &nbsp;·&nbsp; <a href="https://discord.gg/eq4Y5AaVCZ" target="_blank">DISCORD</a></p>
     </footer>
 
     <script>
         function loginDiscord() {
-            // REMPLACE TON_CLIENT_ID par ton vrai Client ID Discord
             const CLIENT_ID = "1495126205190635630";
             const REDIRECT_URI = encodeURIComponent(window.location.origin + "/api/callback");
             const SCOPE = "identify guilds";
