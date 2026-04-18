@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Téléchargement — Pack Neon LS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue:#0af; --green:#0df09a; --green-glow:rgba(0,220,150,0.35); --red:#ff2244; --white:#f0f4ff; --dark:#04080f; --panel:rgba(4,14,28,0.92); --border:rgba(0,170,255,0.25); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body { font-family:'Rajdhani',sans-serif; background:#04080f; color:var(--white); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow-x:hidden; user-select:none; -webkit-user-select:none; }
+        body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px); pointer-events:none; z-index:999; }
+        .bg { position:fixed; inset:0; z-index:0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,60,120,0.2) 0%, transparent 70%), linear-gradient(180deg,#04080f 0%,#060d1e 100%); }
+
+        .card { position:relative; z-index:10; width:100%; max-width:500px; padding:0 20px; }
+        .card-inner { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:44px 40px; backdrop-filter:blur(24px); position:relative; overflow:hidden; }
+        .card-inner::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--blue),transparent); }
+
+        /* LOADING STATE */
+        #state-loading { text-align:center; }
+        .spinner { width:48px; height:48px; border:2px solid rgba(0,170,255,0.15); border-top-color:var(--blue); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 24px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .loading-text { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:rgba(180,200,240,0.5); letter-spacing:3px; animation:blink 1.5s ease infinite; }
+        @keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+        /* SUCCESS STATE */
+        #state-success { display:none; text-align:center; }
+        .success-icon { font-size:3rem; margin-bottom:16px; animation:pulse 2s ease infinite; }
+        @keyframes pulse { 0%,100%{text-shadow:0 0 20px var(--green-glow)} 50%{text-shadow:0 0 50px var(--green-glow),0 0 100px rgba(0,220,150,0.15)} }
+        .success-title { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:4px; color:var(--green); text-shadow:0 0 20px var(--green-glow); margin-bottom:6px; }
+        .success-sub { font-family:'Share Tech Mono',monospace; font-size:0.68rem; color:rgba(0,220,150,0.55); letter-spacing:3px; margin-bottom:30px; }
+        .btn-download { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:18px; background:linear-gradient(135deg,#0df09a,#00bb77); color:#000!important; text-decoration:none; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:4px; border-radius:4px; box-shadow:0 0 30px rgba(0,220,150,0.3),0 4px 20px rgba(0,0,0,0.4); transition:all 0.3s; margin-bottom:28px; }
+        .btn-download:hover { transform:translateY(-2px); box-shadow:0 0 50px rgba(0,220,150,0.5),0 8px 30px rgba(0,0,0,0.5); }
+        .credits { background:rgba(0,220,150,0.05); border:1px solid rgba(0,220,150,0.2); border-radius:4px; padding:20px; font-family:'Share Tech Mono',monospace; font-size:0.67rem; color:rgba(180,240,210,0.55); line-height:1.8; letter-spacing:0.5px; text-align:left; }
+        .credits p+p { margin-top:10px; }
+        .credits strong { color:rgba(0,220,150,0.8); }
+
+        /* ERROR STATE */
+        #state-error { display:none; text-align:center; }
+        .error-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--red); letter-spacing:4px; margin-bottom:12px; }
+        .error-msg { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:rgba(255,100,120,0.7); letter-spacing:1px; line-height:1.8; margin-bottom:24px; }
+        .btn-back { display:inline-block; padding:13px 28px; border:1px solid rgba(0,170,255,0.4); color:var(--blue)!important; text-decoration:none; font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px; border-radius:4px; transition:all 0.3s; }
+        .btn-back:hover { background:rgba(0,170,255,0.1); }
+
+        .back-link { position:fixed; top:20px; left:20px; z-index:20; font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:rgba(180,200,240,0.3); letter-spacing:2px; text-decoration:none; transition:color 0.3s; }
+        .back-link:hover { color:var(--blue); }
+
+        @keyframes fadeIn { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+        .card { animation:fadeIn 0.5s ease forwards; }
+    </style>
+</head>
+<body>
+    <script>document.addEventListener('contextmenu',e=>e.preventDefault());</script>
+    <div class="bg"></div>
+    <a href="/" class="back-link">← RETOUR</a>
+
+    <div class="card">
+        <div class="card-inner">
+
+            <!-- LOADING -->
+            <div id="state-loading">
+                <div class="spinner"></div>
+                <p class="loading-text">// VÉRIFICATION EN COURS //</p>
+            </div>
+
+            <!-- SUCCESS -->
+            <div id="state-success">
+                <div class="success-icon">✅</div>
+                <h1 class="success-title">ACCÈS VALIDÉ</h1>
+                <p class="success-sub">// MEMBRE DISCORD CONFIRMÉ — TÉLÉCHARGEMENT AUTORISÉ //</p>
+                <a id="download-btn" href="#" class="btn-download" target="_blank">⬇ TÉLÉCHARGER LE PACK</a>
+                <div class="credits">
+                    <p><strong>CRÉDITS — PACK NEON LS</strong></p>
+                    <p>Conçu et réalisé par <strong>GAMRYAN</strong>. Œuvre originale protégée par le Code de la propriété intellectuelle (art. L111-1 et suivants).</p>
+                    <p>Toute reproduction, modification ou diffusion sans <strong>autorisation expresse</strong> est strictement interdite (art. L335-2 et L335-3).</p>
+                    <p style="margin-top:14px;color:rgba(0,220,150,0.4)">Merci de respecter le travail — Gamryan</p>
+                </div>
+            </div>
+
+            <!-- ERROR -->
+            <div id="state-error">
+                <p class="error-title">🚫 ACCÈS REFUSÉ</p>
+                <p class="error-msg" id="error-msg">Token invalide ou expiré.<br>Reconnecte-toi via la page d'accueil.</p>
+                <a href="/" class="btn-back">← RETOUR À L'ACCUEIL</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (async function () {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get("t");
+
+            if (!token) {
+                showError("Aucun token fourni. Connecte-toi via la page d'accueil.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/verify?t=${encodeURIComponent(token)}`);
+                const data = await res.json();
+
+                if (data.ok && data.downloadUrl) {
+                    document.getElementById("download-btn").href = data.downloadUrl;
+                    show("state-success");
+                } else {
+                    const messages = {
+                        token_expired: "Ton accès a expiré (15 min). Reconnecte-toi.",
+                        invalid_signature: "Token invalide. Ne tente pas de modifier l'URL.",
+                        invalid_format: "Données corrompues. Reconnecte-toi.",
+                    };
+                    showError(messages[data.reason] || "Accès refusé. Reconnecte-toi.");
+                }
+            } catch (e) {
+                showError("Erreur réseau. Vérifie ta connexion et réessaie.");
+            }
+        })();
+
+        function show(id) {
+            document.getElementById("state-loading").style.display = "none";
+            document.getElementById(id).style.display = "block";
+        }
+
+        function showError(msg) {
+            document.getElementById("error-msg").innerHTML = msg;
+            show("state-error");
+        }
+    </script>
+</body>
+</html>
